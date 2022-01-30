@@ -72,10 +72,10 @@ print("autotrade start")
 while True:
     try:
         now = datetime.datetime.now()
-        start_time = get_start_time(crypto_trade_name) + datetime.timedelta(seconds = 180)
+        start_time = get_start_time(crypto_trade_name)
         end_time = start_time + datetime.timedelta(days = 1)
 
-        # 9:03 ~ 9:02:50
+        # 9:00 ~ 8:59:50
         if start_time < now < end_time - datetime.timedelta(seconds = 10):
             target_price = get_target_price(crypto_trade_name, get_best_k())
             current_price = get_current_price(crypto_trade_name)
