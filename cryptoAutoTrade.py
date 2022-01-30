@@ -9,7 +9,7 @@ crypto_trade_name = "KRW-BORA"
 crypto_balance_name = "BORA"
 min_crypto_num = 10
 
-# 7일동안 최대 수익 k값
+# 7일동안 최대 수익 k값 찾기
 def get_best_k():
     max_k = 0
     max_ror = 0
