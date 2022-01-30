@@ -5,9 +5,7 @@ import numpy as np
 
 access_key = "access_key"
 secret_key = "secret_key"
-crypto_trade_name = "KRW-BORA"
-crypto_balance_name = "BORA"
-min_crypto_num = 10
+crypto_name = "KRW-BORA"
 
 # 7일동안 최대 수익 k값 찾기
 def get_best_k():
@@ -15,7 +13,7 @@ def get_best_k():
     max_ror = 0
 
     for k in np.arange(0.1, 1, 0.1):
-        df = pyupbit.get_ohlcv(crypto_trade_name, count = 7)
+        df = pyupbit.get_ohlcv(crypto_name, count = 7)
         df['range'] = (df['high'] - df['low']) * k
         df['target'] = df['open'] + df['range'].shift(1)
 
@@ -43,11 +41,11 @@ def get_start_time(ticker):
     start_time = df.index[0]
     return start_time
 
-# 15일 이동 평균선 조회
-def get_ma15(ticker):
-    df = pyupbit.get_ohlcv(ticker, interval = "day", count = 15)
-    ma15 = df['close'].rolling(15).mean().iloc[-1]
-    return ma15
+#  15일 이동 평균선 조회
+#  def get_ma15(ticker):
+#     df = pyupbit.get_ohlcv(ticker, interval = "day", count = 15)
+#     ma15 = df['close'].rolling(15).mean().iloc[-1]
+#     return ma15
 
 # 잔고 조회
 def get_balance(ticker):
@@ -66,27 +64,26 @@ def get_current_price(ticker):
 
 # 로그인
 upbit = pyupbit.Upbit(access_key, secret_key)
-print("autotrade start")
 
 # 자동매매 시작
 while True:
     try:
         now = datetime.datetime.now()
-        start_time = get_start_time(crypto_trade_name)
+        start_time = get_start_time(crypto_name)
         end_time = start_time + datetime.timedelta(days = 1)
 
         # 9:00 ~ 8:59:50
         if start_time < now < end_time - datetime.timedelta(seconds = 10):
-            target_price = get_target_price(crypto_trade_name, get_best_k())
-            current_price = get_current_price(crypto_trade_name)
+            target_price = get_target_price(crypto_name, get_best_k())
+            current_price = get_current_price(crypto_name)
             if target_price < current_price:
                 krw = get_balance("KRW")
                 if krw > 5000:
-                    upbit.buy_market_order(crypto_trade_name, krw * 0.9995)
+                    upbit.buy_market_order(crypto_name, krw * 0.9995)
         else:
-            crypto = get_balance(crypto_balance_name)
-            if crypto > min_crypto_num:
-                upbit.sell_market_order(crypto_trade_name, crypto * 0.9995)
+            number_of_crypto = get_balance(crypto_name.split("-")[1])
+            if number_of_crypto > 10000 / pyupbit.get_current_price(crypto_name):
+                upbit.sell_market_order(crypto_name, number_of_crypto * 0.9995)
         time.sleep(1)
     except Exception as e:
         print(e)
