@@ -1,3 +1,3 @@
-# CryptoAutoTrade
+# 🤑가상화폐 자동 매매 using Python, Upbit API🤑
 * 변동성 돌파 전략
 * to be added...
